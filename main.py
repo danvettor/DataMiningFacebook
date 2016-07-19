@@ -30,7 +30,7 @@ for clf in sgds:
     elem = []
     label = []
     for i in range(1,samples):
-        index = random.randint(1,len(X_train)-1)
+        index = random.randint(0,len(X_train)-1)
         elem.append(X_train[index])
         label.append(Y_train[index])
     clf.fit(elem,label)
