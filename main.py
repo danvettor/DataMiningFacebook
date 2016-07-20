@@ -27,7 +27,7 @@ Y_train = np.array(Y_train, dtype=float)
 
 # cria os 100 classificadores 
 for i in range(0,100):
-    sgds.append(SGDClassifier(loss="modified_huber", alpha=0.01, n_iter=200, fit_intercept=True))
+    sgds.append(SGDClassifier(loss="modified_huber", alpha=0.01, n_iter=200, fit_intercept=True,n_jobs=-1))
 
 for clf in sgds:
     # pegar 1000 elementos aleatorios e treinar o clf
