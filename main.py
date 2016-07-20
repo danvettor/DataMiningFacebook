@@ -4,23 +4,29 @@ import file_reader as fr
 import numpy as np 
 import operator
 
-samples = 10
+samples = 100
 sgds = []
 X_train = []
 Y_train = []
-num_lines = 10
+num_lines = 100
 
 output = open('../output.csv','w')
 
-X_train, Y_train = fr.get_train_parameters('../processed_train.csv',num_lines)
-X_test = fr.get_test_parameters('../processed_test.csv',num_lines)
+# X_train, Y_train = fr.get_train_parameters('../processed_train.csv',num_lines)
+X_train, Y_train = fr.get_train_parameters('../new_train.csv',num_lines)
+
+X_test = fr.get_test_parameters('../real_test.csv',num_lines)
+# X_test = fr.get_test_parameters('../processed_test.csv',num_lines)
+
+print("tamano: "+ str(len(X_test)))
+# print("tamano: "+ str(X_test[0][0]))
 
 X_train = np.array(X_train, dtype=float)
 X_test = np.array(X_test, dtype=float)
 Y_train = np.array(Y_train, dtype=float)
 
 # cria os 100 classificadores 
-for i in range(0,10):
+for i in range(0,100):
     sgds.append(SGDClassifier(loss="modified_huber", alpha=0.01, n_iter=200, fit_intercept=True))
 
 for clf in sgds:
@@ -73,9 +79,10 @@ for c in classes:
 
 output.write("row_id, place_id")
 output.write("\n")
+print("escrevi")
 i = 0
-for linha in range(len(newMap3)):
-    output.write(str(i) + ",")
+for linha in range(num_lines):
+    output.write(str(int(X_test[i][0])) + ",")
     for clf in range(len(sgds)):
         for elem in newMap3[clf][linha]:
             voting[classes[clf][elem]]+=1
@@ -88,4 +95,3 @@ for linha in range(len(newMap3)):
         voting[j] = 0
     # output.write
     i+=1
-
