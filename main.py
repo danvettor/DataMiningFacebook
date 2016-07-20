@@ -2,13 +2,14 @@ from sklearn.linear_model import SGDClassifier
 import random
 import file_reader as fr
 import numpy as np 
+import operator
 
-samples = 100
+samples = 10
 sgds = []
 X_train = []
 Y_train = []
+num_lines = 10
 
-num_lines = 1000
 output = open('../output.csv','w')
 
 X_train, Y_train = fr.get_train_parameters('../processed_train.csv',num_lines)
@@ -19,7 +20,7 @@ X_test = np.array(X_test, dtype=float)
 Y_train = np.array(Y_train, dtype=float)
 
 # cria os 100 classificadores 
-for i in range(0,100):
+for i in range(0,10):
     sgds.append(SGDClassifier(loss="modified_huber", alpha=0.01, n_iter=200, fit_intercept=True))
 
 for clf in sgds:
@@ -70,19 +71,21 @@ for c in classes:
     for elem in c:
         voting[elem] = 0
 
+output.write("row_id, place_id")
+output.write("\n")
+i = 0
 for linha in range(len(newMap3)):
+    output.write(str(i) + ",")
     for clf in range(len(sgds)):
         for elem in newMap3[clf][linha]:
             voting[classes[clf][elem]]+=1
+    for j in range(3):
+        biggest_prob = max(voting.keys(), key=(lambda k: voting[k]))
+        output.write(str(int(biggest_prob))+" ")
+        voting[biggest_prob] = 0
+    output.write("\n")
+    for j in voting:
+        voting[j] = 0
+    # output.write
+    i+=1
 
-print(voting)
-# output.write("row_id, place_id")
-# output.write("\n")
-# _id = 0
-# for mapIndex in map3:
-#   output.write(str(_id)+",")
-#   _id+=1
-#   for i in mapIndex:
-#       output.write(str(int(classes[i]))+" ")
-#   output.write("\n")
-# print(map3[0])

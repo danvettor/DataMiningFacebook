@@ -29,8 +29,8 @@ def get_train_parameters(filename, line_number=1):
 			y.append(tempY)
 
 		i+=1
-		if(i >line_number):
-			break
+		# if(i >line_number):
+		# 	break
 
 	return X,y
 
@@ -54,8 +54,8 @@ def get_test_parameters(filename, line_number=1):
 			
 			X.append(tempX)		
 		i+=1
-		if(i >line_number):
-			break
+		# if(i >line_number):
+		# 	break
 
 	return X
 
@@ -68,7 +68,7 @@ def print_file(filename, line_number=1):
 	for line in file:
 		i+=1
 		print (line+'\n')
-		if(i >= line_number):
-			break
+		# if(i >= line_number):
+		# 	break
 
 
