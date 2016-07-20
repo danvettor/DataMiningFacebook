@@ -3,112 +3,79 @@ import random
 import file_reader as fr
 import numpy as np 
 
-
-samples = 10
+samples = 100
 sgds = []
 X_train = []
 Y_train = []
 
-# fr.print_file('../processed_test.csv')
-
-# fr.print_file('../processed_test.csv',10)
-num_lines = 4
+num_lines = 1000
 output = open('../output.csv','w')
 
-# fr.print_file('../processed_train.csv', num_lines)
 X_train, Y_train = fr.get_train_parameters('../processed_train.csv',num_lines)
 X_test = fr.get_test_parameters('../processed_test.csv',num_lines)
-# print("tamanho train: "+ str(len(X_train)))
-# print("tamanho test: "+ str(len(X_test)))
 
 X_train = np.array(X_train, dtype=float)
 X_test = np.array(X_test, dtype=float)
 Y_train = np.array(Y_train, dtype=float)
-# X_train=[
-#   [1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],
-#   [1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6]
-#   ]
-# X_test=[
-#   [1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],
-#   [1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6]
-#   ]
-# Y_train=[1,0,1,1,0,1,0,1,0,1]
 
 # cria os 100 classificadores 
-for i in range(0,4):
+for i in range(0,100):
     sgds.append(SGDClassifier(loss="modified_huber", alpha=0.01, n_iter=200, fit_intercept=True))
 
 for clf in sgds:
-    # pegar 1000 eleme1ntos aleatorios e treinar o clf
+    # pegar 1000 elementos aleatorios e treinar o clf
     elem = []
     label = []
-    for i in range(1,samples):
-        index = random.randint(0,len(X_train)-1)
-        elem.append(X_train[index])
-        label.append(Y_train[index])
+    indexA = -1
+    indexB = -1
+    for i in range(samples):
+        indexA = random.randint(0,len(X_train)-1)
+        while indexA==indexB:
+            indexA = random.randint(0,len(X_train)-1)
+        elem.append(X_train[indexA])
+        label.append(Y_train[indexA])
+        indexB = indexA
     clf.fit(elem,label) 
 
 results = []
+classes = []
+
 for clf in sgds:
     results.append(clf.predict_proba(X_test).tolist())
-    # print (clf.classes_)
-
-classes = sgds[0].classes_
-
+    classes.append(clf.classes_)
 
 map3 = []
-# print results
-# exit(0)
-for result in results:
-    # print result
-    # for example in result:
-        # print example
-    index = []
 
+for result in results:
+
+    index = []
     index = np.argsort(np.array(result))
     map3.append([linha[-3:] for linha in index ])
-    # map3 = [linha[len(linha)-3:len(linha)] for linha in index ]
 
-print(map3[0][0])
-
-
-
-# =========================
-# TA DANDO MERDA AQUI
-# =========================
+newMap3 = []
 for mapList in map3:
-    print (mapList)
+    l = []
     i=0
     for m in mapList:
         i+= 1
         if len(m)<3:
-            print("entrei na condicao")
-            m = np.insert(m,-1,0)
-            print(map3[i][:])
-            print("novo array" + str(m))
-
+            dif = 3 - len(m)
+            for j in range(dif):
+                m = np.append(m,0)
+        l.append(m)  
+    newMap3.append(l)
 
 voting = {}
 for c in classes:
-    voting[c] = 0
-# print(voting)
+    for elem in c:
+        voting[elem] = 0
 
-# quantidade de linhas de teste
-for i in range(len(map3)):
-    # quantidade de classificadores
-    for j in range(len(map3[0])):
-        # pegando os 3 itens do array
-        # print(classes[map3[i][j]])
-            temp=map3[i][j][2]
-        # for k in range(len(map3[0][0])):
-            # voting[classes[map3[i][j][k]]]+=1 
+for linha in range(len(newMap3)):
+    for clf in range(len(sgds)):
+        for elem in newMap3[clf][linha]:
+            voting[classes[clf][elem]]+=1
 
-# print(voting)
-# print(max(voting))
-
-print(map3)
-
-# print(voting)
+print(voting)
 # output.write("row_id, place_id")
 # output.write("\n")
 # _id = 0
